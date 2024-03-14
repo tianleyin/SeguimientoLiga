@@ -1,0 +1,16 @@
+<h1>Asignar Equipos a Liga</h1>
+<form method="post">
+    {% csrf_token %}
+    <label for="liga">Selecciona una liga:</label>
+    <select name="liga" id="liga">
+        {% for liga in ligas %}
+            <option value="{{ liga.id }}">{{ liga.nombre }}</option>
+        {% endfor %}
+    </select><br><br>
+    <label for="equipos">Selecciona uno o más equipos:</label><br>
+    {% for equipo in equipos %}
+        <input type="checkbox" name="equipos" value="{{ equipo.id }}"> {{ equipo.nombre }}<br>
+    {% endfor %}
+    <br>
+    <button type="submit">Guardar</button>
+</form>
