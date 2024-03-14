@@ -8,17 +8,24 @@ class EventInline(admin.TabularInline):
     model = Event
     fields = ["tiempo","tipo","jugador","equipo"]
     ordering = ("tiempo",)
+    extra = 0
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
-        partido_id = request.resolver_match.kwargs['object_id']
+        # Verificar si existe 'object_id' en request.resolver_match.kwargs
+        partido_id = request.resolver_match.kwargs.get('object_id')
+
+        # Si no hay 'object_id', manejar el caso apropiadamente
+        if partido_id is None:
+            # Manejar el caso, por ejemplo, mostrar un mensaje de error
+            return super().formfield_for_foreignkey(db_field, request, **kwargs)
+
+        # Si 'object_id' está presente, continuar con la lógica existente
         partido = Partido.objects.get(id=partido_id)
         equips_ids = [partido.local.id, partido.visitante.id]
         qs = Equipo.objects.filter(id__in=equips_ids)
 
-        # Obtener los IDs de los equipos participantes en el partido
         equipo_local_id = partido.local.id
         equipo_visitante_id = partido.visitante.id
         
-        # Filtrar los jugadores que pertenecen a los equipos participantes
         jugadores_equipo_local = Jugador.objects.filter(equipo_id=equipo_local_id)
         jugadores_equipo_visitante = Jugador.objects.filter(equipo_id=equipo_visitante_id)
         jugadores_en_partido = jugadores_equipo_local | jugadores_equipo_visitante
@@ -28,7 +35,8 @@ class EventInline(admin.TabularInline):
 
         if db_field.name == "jugador":
               kwargs["queryset"] = jugadores_en_partido
-        return super().formfield_for_foreignkey(db_field, request, **kwargs)      
+        
+        return super().formfield_for_foreignkey(db_field, request, **kwargs)   
     
 class PartidoAdmin(admin.ModelAdmin):
         # podem fer cerques en els models relacionats
