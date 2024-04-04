@@ -2,6 +2,7 @@ from django.shortcuts import get_object_or_404, render
 from django.http import HttpResponse
 from django import forms
 from django.shortcuts import redirect
+from django.contrib.auth.decorators import login_required
 
 from .models import *
 
@@ -13,6 +14,14 @@ def index(request):
 class MenuForm(forms.Form):
     lliga = forms.ModelChoiceField(queryset=Liga.objects.all())
  
+@login_required
+def profile(request):
+    user = request.user
+    return HttpResponse("Profile: " + user.username +
+        "<br> Nombre: " + user.first_name + 
+        "<br> Email: " + user.last_name
+    )
+
 def menu(request):
     form = MenuForm()
     if request.method == "POST":

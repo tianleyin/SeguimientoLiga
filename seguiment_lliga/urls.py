@@ -22,6 +22,9 @@ import lliga
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('liga/', include('lliga.urls')),
-    path('', lliga.views.index)
+    path('', lliga.views.index),
+    path('profile/', lliga.views.profile),
+    path("accounts/", include("django.contrib.auth.urls")),
+    path("accounts/profile/", lliga.views.profile, name="profile"),
 ]
 
